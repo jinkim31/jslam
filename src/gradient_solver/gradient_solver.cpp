@@ -1,27 +1,37 @@
 #include "gradient_solver.h"
 
-GradientSolver::GradientSolver(function<double(double)> costFunction, double learningRate)
+GradientSolver::GradientSolver(function<double(MatrixXd)> costFunction, Jacobian<Dynamic, Dynamic> jacobian, double learningRate)
 {
-    this->costFunction = costFunction;
+    this->costFunc = costFunction;
+    this->jacobian = jacobian;
     this->learningRate = learningRate;
 }
 
-GradientSolver::GradientSolver() : GradientSolver([](double a){return 0;}, 0)
+MatrixXd GradientSolver::solve(MatrixXd &arg, int maxIteration, double termScore, bool debug)
 {
+    for(int i=0; i<maxIteration; i++)
+    {
+        // gradient descent
+        MatrixXd diff(this->jacobian.rows(), this->jacobian.cols());
+        for(int x=0; x<diff.rows(); x++)
+        {
+            for(int y=0; y<diff.cols(); y++)
+            {
+                diff(x,y) = this->jacobian(x,y)(arg(x,y));
+            }
+        }
+        arg -= arg*this->learningRate;
 
-}
 
-double GradientSolver::solve(int itr, bool debug)
-{
-    return 0;
-}
+        // get cost
+        double cost = this->costFunc(arg);
 
-void GradientSolver::setConstFunction(function<double(double)> costFunction)
-{
-    this->costFunction = costFunction;
-}
+        // print debug
+        cout << "iter" << i+1 << ": cost:" << cost << endl;
 
-void GradientSolver::setLearningRate(double learningRate)
-{
-    this->learningRate = learningRate;
+        // check break state
+        if(cost <= termScore) break;
+    }
+
+    return arg;
 }

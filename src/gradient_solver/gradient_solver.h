@@ -1,21 +1,27 @@
 #ifndef JSLAM_GRADIENT_SOLVER_H
 #define JSLAM_GRADIENT_SOLVER_H
 
+#include <iostream>
 #include <functional>
+#include <eigen3/Eigen/Dense>
 
 using namespace std;
+using namespace Eigen;
+
 
 class GradientSolver
 {
+public:
+    template <int T1, int T2>
+    using Jacobian = Matrix<function<double(double)>, T1, T2>;
+
 private:
-    function<double(double)> costFunction;
+    function<double(MatrixXd)> costFunc;
+    Jacobian<Dynamic, Dynamic> jacobian;
     double learningRate;
 public:
-    GradientSolver(function<double(double)> costFunction, double learningRate);
-    GradientSolver();
-    double solve(int itr=1, bool debug=false);
-    void setConstFunction(function<double(double)> costFunction);
-    void setLearningRate(double learningRate);
+    GradientSolver(function<double(MatrixXd)> costFunction, Jacobian<Dynamic, Dynamic> jacobian, double learningRate);
+    MatrixXd solve( MatrixXd &arg, int maxIteration, double termScore=0.0, bool debug=false);
 };
 
 
