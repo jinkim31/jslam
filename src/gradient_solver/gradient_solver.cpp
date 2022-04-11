@@ -7,7 +7,7 @@ GradientSolver::GradientSolver(function<double(MatrixXd)> costFunction, Jacobian
     this->learningRate = learningRate;
 }
 
-MatrixXd GradientSolver::solve(MatrixXd &arg, int maxIteration, double termScore, bool debug)
+MatrixXd GradientSolver::solve(MatrixXd &arg, int maxIteration, double minCost, bool debug)
 {
     for(int i=0; i<maxIteration; i++)
     {
@@ -27,10 +27,11 @@ MatrixXd GradientSolver::solve(MatrixXd &arg, int maxIteration, double termScore
         double cost = this->costFunc(arg);
 
         // print debug
-        cout << "iter" << i+1 << ": cost:" << cost << endl;
+        if(debug)
+        cout << "iter:" << i+1 << " cost:" << cost << endl;
 
         // check break state
-        if(cost <= termScore) break;
+        if(cost <= minCost) break;
     }
 
     return arg;

@@ -21,7 +21,7 @@ private:
     double learningRate;
 public:
     GradientSolver(function<double(MatrixXd)> costFunction, Jacobian<Dynamic, Dynamic> jacobian, double learningRate);
-    MatrixXd solve( MatrixXd &arg, int maxIteration, double termScore=0.0, bool debug=false);
+    MatrixXd solve( MatrixXd &arg, int maxIteration, double minCost, bool debug=false);
 };
 
 

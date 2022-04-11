@@ -22,6 +22,8 @@ add_executable(
         jslam
         src/main.cpp
         src/gradient_solver/gradient_solver.cpp
+        src/submap/prob_grid.cpp
+        src/submap/grid_3d.cpp
 )
 
 target_link_libraries(jslam ${catkin_LIBRARIES})
