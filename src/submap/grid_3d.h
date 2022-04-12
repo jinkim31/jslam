@@ -21,9 +21,11 @@ private:
 
     void allocGrid(Grid& grid, const Vector3i& size);
     void deleteGrid(Grid& grid, const Vector3i& size);
+    void copyGrid(Grid& des, const Vector3i& desOffset, const Grid& src, const Vector3i& srcSize, const Vector3i srcOffset);
 
 public:
     Grid3D(const Vector3i& initialSize);
+    Grid3D();
     ~Grid3D();
 
     inline const Vector3i getSize(){return size;}
@@ -48,7 +50,6 @@ public:
 
     void set(const Vector3i& index, const double value, const bool& autoAllocate = false);
     const double get(const Vector3i& index);
-    void visualize();
 };
 
 

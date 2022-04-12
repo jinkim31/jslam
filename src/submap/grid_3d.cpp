@@ -6,14 +6,18 @@
 
 Grid3D::Grid3D(const Vector3i& initialSize)
 {
-    ros::NodeHandle nh;
-    vizPub = nh.advertise<visualization_msgs::Marker>("jslam_marker", 0);
-
-
     size = initialSize;
     allocGrid(grid, size);
     offset<< 0,0,0;
 
+    sizeIncrement = 10;
+}
+
+Grid3D::Grid3D()
+{
+    size<<0,0,0;
+    allocGrid(grid, size);
+    offset << 0,0,0;
     sizeIncrement = 10;
 }
 
@@ -22,54 +26,9 @@ Grid3D::~Grid3D()
 
 }
 
-void Grid3D::visualize()
-{
-    visualization_msgs::Marker marker;
-    marker.header.frame_id = "map";
-    marker.header.stamp = ros::Time();
-    marker.ns = "jslam";
-    marker.id = 0;
-    marker.type = visualization_msgs::Marker::CUBE_LIST;
-    marker.action = visualization_msgs::Marker::ADD;
-    marker.pose.position.x = 1;
-    marker.pose.position.y = 1;
-    marker.pose.position.z = 1;
-    marker.pose.orientation.x = 0.0;
-    marker.pose.orientation.y = 0.0;
-    marker.pose.orientation.z = 0.0;
-    marker.pose.orientation.w = 1.0;
-    marker.scale.x = 1;
-    marker.scale.y = 1;
-    marker.scale.z = 1;
-
-    for(int x=0; x<size[0]; x++){
-        for(int y=0; y<size[1]; y++){
-            for(int z=0; z<size[2]; z++)
-            {
-                geometry_msgs::Point p;
-                p.x = x + offset[0];
-                p.y = y + offset[0];
-                p.z = z + offset[0];
-
-                std_msgs::ColorRGBA c;
-                c.r = 1.0f;
-                c.g = 1.0f;
-                c.b = 1.0f;
-                if(grid[x][y][z]==0.0f) continue;
-                else c.a = grid[x][y][z];
-
-                marker.points.push_back(p);
-                marker.colors.push_back(c);
-            }
-        }
-    }
-
-    vizPub.publish(marker);
-}
-
-
 void Grid3D::allocGrid(Grid& grid, const Vector3i& size)
 {
+    cout<<"allocation grid of size\n"<<size<<endl;
     grid = (double***)malloc(sizeof(double**) * size[0]);
 
     for(int y=0; y<size[0]; y++)
@@ -81,10 +40,22 @@ void Grid3D::allocGrid(Grid& grid, const Vector3i& size)
             grid[y][z] = (double*)malloc(sizeof(double)* size[2]);
         }
     }
+
+    for(int x=0; x<size[0]; x++)
+    {
+        for (int y = 0; y < size[1]; y++)
+        {
+            for (int z = 0; z < size[2]; z++)
+            {
+                grid[x][y][z] = 0.0f;
+            }
+        }
+    }
 }
 
 void Grid3D::deleteGrid(Grid& grid, const Vector3i& size)
 {
+    cout<<"deleting grid of size\n"<<size<<endl;
     for(int y=0; y<size[0]; y++)
     {
         for(int z=0; z<size[1]; z++)
@@ -108,7 +79,6 @@ void Grid3D::set(const Vector3i &index, const double value, const bool& autoAllo
 
         do
         {
-
             for(int dir=0; dir<3; dir++)
             {
                 if (unsignedIndex[dir] < 0)
@@ -128,6 +98,7 @@ void Grid3D::set(const Vector3i &index, const double value, const bool& autoAllo
         Grid newGrid;
         allocGrid(newGrid, size);
 
+        copyGrid(newGrid, offset, grid, oldSize, oldOffset);
         deleteGrid(grid, oldSize);
 
         grid = newGrid;
@@ -141,5 +112,22 @@ void Grid3D::set(const Vector3i &index, const double value, const bool& autoAllo
 
 const double Grid3D::get(const Vector3i &index)
 {
-    return 0;
+    cout<<"get\n"<<getUnsignedIndex(index)<<endl;
+    if(isIndexInbound(index)) return grid[index[0]][index[1]][index[2]];
+    return 0.0f;
+}
+
+void Grid3D::copyGrid(Grid3D::Grid &des, const Vector3i& desOffset, Grid3D::Grid const &src, const Vector3i &srcSize, const Vector3i srcOffset)
+{
+    Vector3i combinedOffset = srcOffset - desOffset;
+    for(int x=0; x<srcSize[0]; x++)
+    {
+        for (int y = 0; y < srcSize[1]; y++)
+        {
+            for (int z = 0; z < srcSize[2]; z++)
+            {
+                des[x + combinedOffset[0]][y + combinedOffset[1]][z + combinedOffset[2]] = src[x][y][z];
+            }
+        }
+    }
 }

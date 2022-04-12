@@ -7,6 +7,7 @@
 #include <ros/ros.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <eigen3/Eigen/Dense>
+#include "grid_3d.h"
 
 using namespace std;
 using namespace Eigen;
@@ -14,10 +15,11 @@ using namespace Eigen;
 class ProbGrid
 {
 private:
+    Grid3D grid;
     ros::Publisher vizPub;
-
 public:
     ProbGrid();
+    ~ProbGrid();
     void addScan(sensor_msgs::PointCloud2& pointCloud);
     void visualize();
     static int getGridIndex(double x){return floor(x);}
