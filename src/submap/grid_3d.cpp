@@ -55,7 +55,6 @@ void Grid3D::allocGrid(Grid& grid, const Vector3i& size)
 
 void Grid3D::deleteGrid(Grid& grid, const Vector3i& size)
 {
-    cout<<"deleting grid of size\n"<<size<<endl;
     for(int y=0; y<size[0]; y++)
     {
         for(int z=0; z<size[1]; z++)
@@ -91,13 +90,10 @@ void Grid3D::set(const Vector3i &index, const double value, const bool& autoAllo
                     size[dir] = size[dir] + sizeIncrement;
                 }
             }
-
-            cout<<"size updated to:\n"<<size<<endl;
         }while(!isIndexInbound(index));
 
         Grid newGrid;
         allocGrid(newGrid, size);
-
         copyGrid(newGrid, offset, grid, oldSize, oldOffset);
         deleteGrid(grid, oldSize);
 
@@ -106,14 +102,13 @@ void Grid3D::set(const Vector3i &index, const double value, const bool& autoAllo
         unsignedIndex = getUnsignedIndex(index);
     }
 
-
     grid[unsignedIndex[0]][unsignedIndex[1]][unsignedIndex[2]] = value;
 }
 
 const double Grid3D::get(const Vector3i &index)
 {
-    cout<<"get\n"<<getUnsignedIndex(index)<<endl;
-    if(isIndexInbound(index)) return grid[index[0]][index[1]][index[2]];
+    Vector3i unsignedIndex = getUnsignedIndex(index);
+    if(isIndexInbound(index)) return grid[unsignedIndex[0]][unsignedIndex[1]][unsignedIndex[2]];
     return 0.0f;
 }
 
@@ -130,4 +125,12 @@ void Grid3D::copyGrid(Grid3D::Grid &des, const Vector3i& desOffset, Grid3D::Grid
             }
         }
     }
+}
+
+void Grid3D::clear()
+{
+    deleteGrid(grid, size);
+    size << 0,0,0;
+    offset << 0,0,0;
+    allocGrid(grid, size);
 }

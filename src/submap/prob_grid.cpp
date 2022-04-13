@@ -61,9 +61,10 @@ void ProbGrid::visualize()
             {
                 Vector3i index;
                 index<<x,y,z;
+
                 std_msgs::ColorRGBA c;
                 c.a = grid.get(index + offset);
-                //if(c.a == 0.0f) continue;
+                if(c.a == 0.0f) continue;
                 c.r = 1.0f;
                 c.g = 1.0f;
                 c.b = 1.0f;
@@ -85,4 +86,9 @@ void ProbGrid::visualize()
 ProbGrid::~ProbGrid()
 {
 
+}
+
+void ProbGrid::clear()
+{
+    grid.clear();
 }

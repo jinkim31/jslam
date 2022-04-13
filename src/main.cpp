@@ -13,16 +13,19 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "jslam");
     ros::NodeHandle nh;
 
-    ProbGrid grid;
+    ProbGrid probGrid;
     sensor_msgs::PointCloud2 msg;
-    grid.addScan(msg);
-    grid.visualize();
 
 
 
     ros::Rate loop_rate(2);
     while (ros::ok())
     {
+        probGrid.clear();
+        probGrid.addScan(msg);
+        probGrid.visualize();
+
+
         ros::spinOnce();
         loop_rate.sleep();
     }

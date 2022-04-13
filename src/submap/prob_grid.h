@@ -22,7 +22,8 @@ public:
     ~ProbGrid();
     void addScan(sensor_msgs::PointCloud2& pointCloud);
     void visualize();
-    static int getGridIndex(double x){return floor(x);}
+    void clear();
+    inline int getGridIndex(double x){return floor(x);}
 };
 
 

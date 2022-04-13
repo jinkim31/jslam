@@ -17,7 +17,6 @@ private:
     Vector3i size;
     Vector3i offset;
     size_t sizeIncrement;
-    ros::Publisher vizPub;
 
     void allocGrid(Grid& grid, const Vector3i& size);
     void deleteGrid(Grid& grid, const Vector3i& size);
@@ -50,6 +49,7 @@ public:
 
     void set(const Vector3i& index, const double value, const bool& autoAllocate = false);
     const double get(const Vector3i& index);
+    void clear();
 };
 
 
